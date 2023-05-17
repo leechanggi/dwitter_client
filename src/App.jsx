@@ -1,3 +1,4 @@
+import React from "react";
 import { Switch, Route, useHistory } from "react-router-dom";
 import Header from "./components/Header";
 import AllTweets from "./pages/AllTweets";
