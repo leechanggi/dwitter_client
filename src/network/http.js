@@ -9,9 +9,10 @@ export default class HttpClient {
     const res = await fetch(`${this.baseURL}${url}`, {
       ...options,
       headers: {
-        'Content-Type': 'Application/json',
+        "Content-Type": "Application/json",
         ...options.headers,
       },
+      credentials: "include",
     });
 
     try {
@@ -21,7 +22,7 @@ export default class HttpClient {
     }
 
     if (res.status > 299 || res.status < 200) {
-      const message = data && data.message ? data.message : '서비스 장애';
+      const message = data && data.message ? data.message : "서비스 장애";
       const error = new Error(message);
       if (res.status === 401) {
         this.authErrorEventBus.notify(error);
