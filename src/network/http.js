@@ -1,7 +1,8 @@
 export default class HttpClient {
-  constructor(baseURL, authErrorEventBus) {
+  constructor(baseURL, authErrorEventBus, fetchCsrfToken) {
     this.baseURL = baseURL;
     this.authErrorEventBus = authErrorEventBus;
+    this.getCsrfToken = fetchCsrfToken;
   }
 
   async fetch(url, options) {
@@ -11,6 +12,7 @@ export default class HttpClient {
       headers: {
         "Content-Type": "Application/json",
         ...options.headers,
+        "dwitter-csrf-token": this.getCsrfToken(),
       },
       credentials: "include",
     });
