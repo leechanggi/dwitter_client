@@ -1,21 +1,22 @@
 export default class HttpClient {
-  constructor(baseURL, authErrorEventBus, fetchCsrfToken) {
+  constructor(baseURL, authErrorEventBus, getCsrfToken) {
     this.baseURL = baseURL;
     this.authErrorEventBus = authErrorEventBus;
-    this.getCsrfToken = fetchCsrfToken;
+    this.getCsrfToken = getCsrfToken;
   }
 
   async fetch(url, options) {
-    let data;
     const res = await fetch(`${this.baseURL}${url}`, {
       ...options,
       headers: {
-        "Content-Type": "Application/json",
+        'Content-Type': 'application/json',
         ...options.headers,
-        "dwitter-csrf-token": this.getCsrfToken(),
+        '_csrf-token': this.getCsrfToken(),
       },
-      credentials: "include",
+      credentials: 'include',
     });
+
+    let data;
 
     try {
       data = await res.json();
@@ -24,7 +25,7 @@ export default class HttpClient {
     }
 
     if (res.status > 299 || res.status < 200) {
-      const message = data && data.message ? data.message : "서비스 장애";
+      const message = data && data.message ? data.message : '서비스 장애';
       const error = new Error(message);
       if (res.status === 401) {
         this.authErrorEventBus.notify(error);
