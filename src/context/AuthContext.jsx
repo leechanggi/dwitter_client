@@ -14,14 +14,14 @@ import Login from "../pages/Login";
 const AuthContext = createContext({});
 
 const tokenRef = createRef();
-const crsfRef = createRef();
+const csrfRef = createRef();
 
 export function AuthProvider({ authService, authErrorEventBus, children }) {
   const [user, setUser] = useState(undefined);
   const [csrfToken, setCsrfToken] = useState(undefined);
 
   useImperativeHandle(tokenRef, () => (user ? user.token : undefined));
-  useImperativeHandle(crsfRef, () => crsfRef);
+  useImperativeHandle(csrfRef, () => csrfToken);
 
   useEffect(() => {
     authErrorEventBus.listen((err) => {
@@ -98,5 +98,5 @@ export class AuthErrorEventBus {
 
 export default AuthContext;
 export const fetchToken = () => tokenRef.current;
-export const fetchCsrfToken = () => crsfRef.current;
+export const fetchCsrfToken = () => csrfRef.current;
 export const useAuth = () => useContext(AuthContext);

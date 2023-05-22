@@ -15,7 +15,7 @@ const authErrorEventBus = new AuthErrorEventBus();
 const httpClient = new HttpClient(
   baseURL, //
   authErrorEventBus, //
-  () => fetchCsrfToken
+  () => fetchCsrfToken()
 );
 const authService = new AuthService(httpClient);
 const socketClient = new Socket(baseURL, () => fetchToken());
