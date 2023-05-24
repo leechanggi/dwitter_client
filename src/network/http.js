@@ -4,28 +4,24 @@ export default class HttpClient {
     this.authErrorEventBus = authErrorEventBus;
     this.getCsrfToken = getCsrfToken;
   }
-
   async fetch(url, options) {
     const res = await fetch(`${this.baseURL}${url}`, {
       ...options,
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         ...options.headers,
-        "_csrf-token": this.getCsrfToken(),
+        '_csrf-token': this.getCsrfToken(),
       },
-      credentials: "include",
+      credentials: 'include',
     });
-
     let data;
-
     try {
       data = await res.json();
     } catch (error) {
       console.error(error);
     }
-
     if (res.status > 299 || res.status < 200) {
-      const message = data && data.message ? data.message : "서비스 장애";
+      const message = data && data.message ? data.message : '서비스 장애';
       const error = new Error(message);
       if (res.status === 401) {
         this.authErrorEventBus.notify(error);
@@ -33,7 +29,6 @@ export default class HttpClient {
       }
       throw error;
     }
-
     return data;
   }
 }

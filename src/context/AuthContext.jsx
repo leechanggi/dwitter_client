@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   createContext,
   createRef,
@@ -8,9 +8,9 @@ import {
   useImperativeHandle,
   useMemo,
   useState,
-} from "react";
-import Header from "../components/Header";
-import Login from "../pages/Login";
+} from 'react';
+import Header from '../components/Header';
+import Login from '../pages/Login';
 
 const AuthContext = createContext({});
 
@@ -25,37 +25,28 @@ export function AuthProvider({ authService, authErrorEventBus, children }) {
   useImperativeHandle(csrfRef, () => csrfToken);
 
   useEffect(() => {
-    authErrorEventBus.listen((err) => {
+    authErrorEventBus.listen(err => {
       console.log(err);
       setUser(undefined);
     });
   }, [authErrorEventBus]);
 
   useEffect(() => {
-    authService
-      .csrfToken()
-      .then(setCsrfToken)
-      .catch(console.error);
+    authService.csrfToken().then(setCsrfToken).catch(console.error);
   }, [authService]);
 
   useEffect(() => {
-    authService
-      .me()
-      .then(setUser)
-      .catch(console.error);
+    authService.me().then(setUser).catch(console.error);
   }, [authService]);
 
   const signUp = useCallback(
     async (username, password, name, email, url) =>
-      authService
-        .signup(username, password, name, email, url)
-        .then((user) => setUser(user)),
+      authService.signup(username, password, name, email, url).then(user => setUser(user)),
     [authService]
   );
 
   const logIn = useCallback(
-    async (username, password) =>
-      authService.login(username, password).then((user) => setUser(user)),
+    async (username, password) => authService.login(username, password).then(user => setUser(user)),
     [authService]
   );
 
