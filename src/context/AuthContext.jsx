@@ -1,4 +1,5 @@
-import React, {
+import React from "react";
+import {
   createContext,
   createRef,
   useCallback,
@@ -97,6 +98,6 @@ export class AuthErrorEventBus {
 }
 
 export default AuthContext;
-export const fetchCsrfToken = () => csrfRef.current;
 export const fetchToken = () => tokenRef.current;
+export const fetchCsrfToken = () => csrfRef.current;
 export const useAuth = () => useContext(AuthContext);

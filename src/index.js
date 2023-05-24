@@ -6,13 +6,13 @@ import AuthService from "./service/auth";
 import TweetService from "./service/tweet";
 import { BrowserRouter } from "react-router-dom";
 import {
-  AuthErrorEventBus,
   AuthProvider,
   fetchToken,
   fetchCsrfToken,
 } from "./context/AuthContext";
-import HttpClient from "./network/http.js";
-import Socket from "./network/socket.js";
+import { AuthErrorEventBus } from "./context/AuthContext";
+import HttpClient from "./network/http";
+import Socket from "./network/socket";
 
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 const authErrorEventBus = new AuthErrorEventBus();

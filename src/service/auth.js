@@ -39,6 +39,7 @@ export default class AuthService {
     const req = this.http.fetch("/auth/csrf-token", {
       method: "GET",
     });
-    return req.csrfToken;
+    console.log(req);
+    return toString(req.csrfToken);
   }
 }
