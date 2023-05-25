@@ -1,0 +1,36 @@
+import axios from "axios";
+import axiosRetry from "axios-retry";
+
+export default class HttpClient {
+  constructor(baseURL, authErrorEventBus, getCsrfToken) {
+    this.baseURL = baseURL;
+    this.authErrorEventBus = authErrorEventBus;
+    this.client = axios.create({
+      baseURL,
+      headers: { "Content-Type": "application/json" },
+      withCredentials: true,
+    });
+  }
+
+  async fetch(url, options) {
+    const { method, body, headers } = options;
+    const req = {
+      url,
+      method,
+      headers: { ...headers, "_csrf-token": this.getCsrfToken() },
+      data: body,
+    };
+
+    try {
+      const res = await this.client(req);
+      return res.data;
+    } catch (err) {
+      if (err.response) {
+        const data = err.response.data;
+        const message = data && data.message ? data.message : "서비스 장애";
+        throw new Error(message);
+      }
+      throw new Error("서비스 장애");
+    }
+  }
+}
