@@ -4,8 +4,8 @@ export default class AuthService {
   }
 
   async signup(username, password, name, email, url) {
-    return this.http.fetch('/auth/signup', {
-      method: 'POST',
+    return this.http.fetch("/auth/signup", {
+      method: "POST",
       body: JSON.stringify({
         username,
         password,
@@ -17,29 +17,29 @@ export default class AuthService {
   }
 
   async login(username, password) {
-    return this.http.fetch('/auth/login', {
-      method: 'POST',
+    return this.http.fetch("/auth/login", {
+      method: "POST",
       body: JSON.stringify({ username, password }),
     });
   }
 
   async logout() {
-    return this.http.fetch('/auth/logout', {
-      method: 'POST',
+    return this.http.fetch("/auth/logout", {
+      method: "POST",
     });
   }
 
   async me() {
-    return this.http.fetch('/auth/me', {
-      method: 'GET',
+    return this.http.fetch("/auth/me", {
+      method: "GET",
     });
   }
 
   async csrfToken() {
     return this.http
-      .fetch('/auth/csrf-token', {
-        method: 'GET',
+      .fetch("/auth/csrf-token", {
+        method: "GET",
       })
-      .then(res => res.csrfToken);
+      .then((res) => res.csrfToken);
   }
 }

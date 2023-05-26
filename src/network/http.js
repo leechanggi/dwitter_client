@@ -1,38 +1,70 @@
+import axios from "axios";
+import axiosRetry from "axios-retry";
+
+const defaultRetryConfig = {
+  retries: 5,
+  retryDelaySec: 250,
+};
+
 export default class HttpClient {
-  constructor(baseURL, authErrorEventBus, getCsrfToken) {
-    this.baseURL = baseURL;
+  constructor(
+    baseURL,
+    authErrorEventBus,
+    getCsrfToken,
+    config = defaultRetryConfig
+  ) {
     this.authErrorEventBus = authErrorEventBus;
     this.getCsrfToken = getCsrfToken;
+    this.client = axios.create({
+      baseURL,
+      headers: { "Content-Type": "application/json" },
+      withCredentials: true,
+    });
+    axiosRetry(this.client, {
+      retries: config.retries,
+      retryDelay: (retryCount) => {
+        const delaySec = Math.pow(2, retryCount) * config.retryDelaySec;
+        function delayJitter(sec) {
+          const numSec = Number(sec);
+          if (numSec <= 1000) {
+            return numSec + numSec * 0.1 * Math.random();
+          } else {
+            return numSec + 100 * Math.random();
+          }
+        }
+        return delayJitter(delaySec);
+      },
+      retryCondition: (error) =>
+        axiosRetry.isNetworkOrIdempotentRequestError(error) ||
+        error.response.status === 429,
+    });
   }
+
   async fetch(url, options) {
-    const res = await fetch(`${this.baseURL}${url}`, {
-      ...options,
+    const { method, headers, body } = options;
+    const req = {
+      url,
+      method,
       headers: {
-        "Content-Type": "application/json",
-        ...options.headers,
+        ...headers,
         "_csrf-token": this.getCsrfToken(),
       },
-      credentials: "include",
-    });
-
-    let data;
+      data: body,
+    };
 
     try {
-      data = await res.json();
+      const res = await this.client(req);
+      return res.data;
     } catch (error) {
-      console.error(error);
-    }
-
-    if (res.status > 299 || res.status < 200) {
-      const message = data && data.message ? data.message : "서비스 장애";
-      const error = new Error(message);
-      if (res.status === 401) {
-        this.authErrorEventBus.notify(error);
-        return;
+      if (error.response) {
+        const data = error.response.data;
+        const message =
+          data && data.message
+            ? data.message
+            : "일시적 네트워크 장애가 발생하였습니다.";
+        throw new Error(message);
       }
-      throw error;
+      throw new Error("일시적 서비스 장애가 발생하였습니다.");
     }
-
-    return data;
   }
 }
