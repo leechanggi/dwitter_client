@@ -7,12 +7,7 @@ const defaultRetryConfig = {
 };
 
 export default class HttpClient {
-  constructor(
-    baseURL,
-    authErrorEventBus,
-    getCsrfToken,
-    config = defaultRetryConfig
-  ) {
+  constructor(baseURL, authErrorEventBus, getCsrfToken, config = defaultRetryConfig) {
     this.authErrorEventBus = authErrorEventBus;
     this.getCsrfToken = getCsrfToken;
     this.client = axios.create({
@@ -35,8 +30,7 @@ export default class HttpClient {
         return delayJitter(delaySec);
       },
       retryCondition: (error) =>
-        axiosRetry.isNetworkOrIdempotentRequestError(error) ||
-        error.response.status === 429,
+        axiosRetry.isNetworkOrIdempotentRequestError(error) || error.response.status === 429,
     });
   }
 
@@ -59,9 +53,7 @@ export default class HttpClient {
       if (error.response) {
         const data = error.response.data;
         const message =
-          data && data.message
-            ? data.message
-            : "일시적 네트워크 장애가 발생하였습니다.";
+          data && data.message ? data.message : "일시적 네트워크 장애가 발생하였습니다.";
         throw new Error(message);
       }
       throw new Error("일시적 서비스 장애가 발생하였습니다.");
